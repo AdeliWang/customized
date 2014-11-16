@@ -1,0 +1,67 @@
+alias vi=vim
+
+os=$(uname -s)
+#   ============== function   ==============
+#   extract:  Extract most know archives with one command
+#   ---------------------------------------------------------
+extract () {
+    if [ -f $1 ] ; then
+        case $1 in
+        *.tar.bz2)   tar xjf $1     ;;
+        *.tar.gz)    tar xzf $1     ;;
+        *.bz2)       bunzip2 $1     ;;
+        *.rar)       unrar e $1     ;;
+        *.gz)        gunzip $1      ;;
+        *.tar)       tar xf $1      ;;
+        *.tbz2)      tar xjf $1     ;;
+        *.tgz)       tar xzf $1     ;;
+        *.zip)       unzip $1       ;;
+        *.Z)         uncompress $1  ;;
+        *.7z)        7z x $1        ;;
+        *)     echo "'$1' cannot be extracted via extract()" ;;
+            esac
+        else
+            echo "'$1' is not a valid file"
+        fi
+}
+
+del() { command mv "$@" ~/.Trash ; } 
+
+#   ============== end of function   ==============
+
+if [ $os == "Darwin" ]; then
+    export CLICOLOR=1
+    export LSCOLORS=GxFxCxDxBxegedabagaced
+    alias ls="ls -G"
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+
+    alias ll='ls -alF'
+    alias la='ls -A'
+    alias l='ls -CF'
+
+#else
+    #alias ls="ls --color"
+
+fi
+
+alias cd..='cd ../'                         # Go back 1 directory level (for fast typers)
+alias ..='cd ../'                           # Go back 1 directory level
+alias ...='cd ../../'                       # Go back 2 directory levels
+alias .3='cd ../../../'                     # Go back 3 directory levels
+alias .4='cd ../../../../'                  # Go back 4 directory levels
+alias .5='cd ../../../../../'               # Go back 5 directory levels
+alias .6='cd ../../../../../../'            # Go back 6 directory levels
+
+alias myip='curl ip.appspot.com'  
+
+alias json="python -mjson.tool"
+
+alias mytmux="tmux -2 new-session -AD -s tmux-studio"
+
+#wine programs
+alias si='env LANG=en_US wine "c:\Program Files\Source Insight 3\Insight3.exe"'
+#aria2c
+alias dl2="aria2c -c -x16 -s20 -j20 -d "

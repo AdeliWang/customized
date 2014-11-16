@@ -1,0 +1,24 @@
+#/bin/sh
+#
+# This script should install to /etc/NetworkManager/dispatcher.d/
+# Script to dispatch NetworkManager events
+#
+myname=$(basename "$0") || exit 1
+log() { logger -p user.info -t "${myname}[$$]" "$*"; }
+IFACE=$1
+ACTION=$2
+
+case ${IFACE} in
+    eth*)
+        case ${ACTION} in
+            up)
+                log "blocking wifi"
+                service route-service restart
+                ;;
+            down)
+                log "unblocking wifi"
+                service route-service stop
+                ;;
+        esac
+        ;;
+esac

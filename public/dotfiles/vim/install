@@ -1,0 +1,75 @@
+#!/bin/bash
+set +e
+
+ins_taglist()
+{
+    local URL=http://sourceforge.net/projects/vim-taglist/files/vim-taglist/4.6/taglist_46.zip
+    local D_PWD=$(pwd)
+    local D_TMP=/tmp/taglist
+    mkdir -p $D_TMP
+    cd $D_TMP
+    wget -P $D_TMP $URL
+    unzip $D_TMP/taglist_46.zip -d $D_TMP
+    mkdir -p /home/$(whoami)/.vim
+    mkdir -p /home/$(whoami)/.vim/plugin
+    mkdir -p /home/$(whoami)/.vim/doc
+    cp $D_TMP/plugin/*  /home/$(whoami)/.vim/plugin/
+    cp $D_TMP/doc/*  /home/$(whoami)/.vim/doc/
+    cd $D_PWD
+    rm -rf $D_TMP
+}
+
+ins_ctags()
+{
+    local URL=http://prdownloads.sourceforge.net/ctags/ctags-5.8.tar.gz
+    local D_TMP=/tmp/ctags
+    local D_PWD=$(pwd)
+    mkdir -p $D_TMP
+    cd $D_TMP
+    wget -P $D_TMP $URL
+    tar -zxf $D_TMP/ctags-5.8.tar.gz
+    cd $D_TMP/ctags-5.8 && ./configure && make && sudo make install
+    cd $D_PWD
+    rm -rf $D_TMP
+}
+
+ins_cscope()
+{
+    local URL=http://sourceforge.net/projects/cscope/files/cscope/15.8a/cscope-15.8a.tar.gz
+    local D_TMP=/tmp/cscope
+    local D_PWD=$(pwd)
+    mkdir -p $D_TMP
+    cd $D_TMP
+    wget -P $D_TMP $URL
+    tar -zxf $D_TMP/cscope-15.8a.tar.gz
+    cd $D_TMP/cscope-15.8a && ./configure && make && sudo make install
+    cd $D_PWD
+    rm -rf $D_TMP
+}
+
+ins_amix_vimrc()
+{
+    insapp git
+   
+    if [ -d ~/.vim_runtime  ]; then
+        rm -rf ~/.vim_runtime
+    fi
+
+    git clone git://github.com/amix/vimrc.git ~/.vim_runtime
+    sh ~/.vim_runtime/install_awesome_vimrc.sh
+    local d_cur=$(pwd)
+    ln -s $d_cur/my_configs.vim ~/.vim_runtime/ 
+    ln -s $d_cur/cscope_maps.vim  ~/.vim_runtime/ 
+    rm -rf ~/.vim_runtime/sources_non_forked/vim-airline
+}
+
+prj_root=$(cd ../../..; pwd)
+source $prj_root/include/func.sh
+#insapp vim
+#ins_ctags
+#ins_taglist
+#ins_cscope
+ins_amix_vimrc
+
+
+##end of file

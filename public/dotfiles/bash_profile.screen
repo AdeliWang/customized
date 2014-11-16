@@ -1,0 +1,26 @@
+#.bash_profile
+# User specific environment and startup programs
+export PATH=$PATH:/usr/local/packages/atria/current/bin:/usr/atria/bin:$HOME/bin
+export PS1='\u@\h:\W\$ '
+export OVER_SSH=1
+# auto reattach to main screen or create main screen if not created
+if [ ! "$SCREEN_NAME" ]; then
+	clear
+	echo -e "Welcome to my workspace. You can connect to an existing or create a new session.\n"
+	SESSIONS=`screen -ls | tail -n +2 | head -n -2`
+	if [ "$SESSIONS" ]; then
+		echo -e "Existing sessions:"
+		screen -ls | tail -n +2 | head -n -2 | cut -d. -f2 | awk '{print "\t"$1}'
+	else
+		echo "No existing sessions.";
+	fi
+	echo -n "Session:"
+	read SCREEN_NAME
+
+	if [ ! "$SCREEN_NAME" ]; then
+		SCREEN_NAME=main
+	fi
+	export SCREEN_NAME
+	screen -dRR $SCREEN_NAME && exit 0
+fi
+

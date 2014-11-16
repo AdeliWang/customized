@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+throw()
+{
+  err_no=$1
+  echo $2
+  exit $err_no
+}
+
+u_id=$(id -u)
+[ $u_id -ne 0 ] && throw 12 "Permission denied"  
+
+[ $# -ne 1 ] && throw 11 "$(basename $0) parameter error: $#"
+
+f_grub="/etc/default/grub"
+
+case "$1" in  
+ "tv"    ) mode="splash" ;;  
+ "win"   ) mode="splash" ;;   
+ "dos"   ) mode="text" ;;   
+ *       ) throw 21 "$0 parameter error"; 
+esac 
+
+sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet $mode\"/g" $f_grub
+update-grub2 >/dev/null 2>/dev/null
+[ $? -ne 0 ] && throw 21 "failed to switch mode"
+reboot

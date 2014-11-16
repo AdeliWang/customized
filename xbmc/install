@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+export d_root=$(cd ..; pwd)
+source $d_root/include/func.sh
+#install ================================================
+echo 'install app if not installed.........'
+insapp vim
+insapp hostapd
+insapp dnsmasq
+
+d_cur=$(pwd)
+
+# link bin/* and sbin/*
+for f in $d_cur/bin/*; do
+    if [ -f $f ]; then
+        rm -f /usr/local/bin/$(basename $f)
+        sudo ln -s $f /usr/local/bin/$(basename $f)
+    fi
+done
+
+for f in $d_cur/sbin/*; do
+    if [ -f $f ]; then
+        rm -f /usr/local/sbin/$(basename $f)
+        sudo ln -s $f /usr/local/sbin/$(basename $f)
+    fi
+done
+
+#dotfiles ================================================
+d_sub=$d_cur/dotfiles
+
+echo "prepare bash_aliases................."
+#  bash_alias
+fn="bash_aliases"
+rm -f ~/.$fn
+cp $d_sub/$fn ~/.$fn
+echo "source $d_root/public/dotfiles/$fn" >> ~/.$fn
+
+# vim
+#cd $d_root/public/dotfiles/vim
+#./install
+#cd $d_cur
+
+
+
+

@@ -1,0 +1,46 @@
+#.bash_profile
+# User specific environment and startup programs
+export PS1='\u@\h:\W\$ '
+
+os=$(uname -s)
+
+export os
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+if [[ ! $S &&  "$os" != "Darwin" ]]; then
+    bin=$(which tmux)
+    if [ -z $bin ]; then
+        echo "please install tmux"
+        exit 1
+    fi
+
+    clear && echo -e "Welcome to TMUX studio. You can connect to an existing or create a new session.\n"
+    $bin has-session 
+    res=$?
+    if [ $res -eq 0 ]; then
+        echo "Existing session:"
+        tmux list-session 2>/dev/null|awk -F: '{print "  "$1}'
+    fi
+
+    read -p "session: " S 
+    if [ ! "$S" ]; then
+        S=main
+    fi
+    export S
+    
+    tmux setenv -g -t $S DISPLAY $DISPLAY # $DISPLAY #set display 
+    $bin -2 new-session -AD -s $S && exit 0 # -t $S
+else
+    test -f ~/.bashrc && source ~/.bashrc
+    ENV_SELF=
+    if [[ $os == "Darwin" ]]; then 
+        ENV_SELF=~/.customize/env-init/env-mac
+    else
+        ENV_SELF=~/.customize/env-init/env-linux
+    fi
+    test -f $ENV_SELF && source $ENV_SELF
+fi
+
+
