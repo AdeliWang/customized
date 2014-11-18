@@ -1,5 +1,7 @@
-#!/bin/bash
-
+#######
+##   This file is used to define some public function 
+#
+#
 throw()
 {
   err_no=$1
@@ -7,6 +9,102 @@ throw()
   exit $err_no
 }
 
+#############################
+#  def some function about bash env
+#  in this section, D_PUB D_PRIV should be defined before called
+#  D_PUB means some bash env is independed on the OS
+#  D_PIV means some bash env is depended on the OS
+handle_bashrc()
+{
+    echo "handle bashrc ..."
+    test -f ~/.bashrc || touch ~/.bashrc
+    [ $(grep -c bash_aliases ~/.bashrc) -eq 0 ] && echo "test -f ~/.bash_aliases && source ~/.bash_aliases" >> ~/.bashrc
+}
+
+handle_alias()
+{
+    [  ! -d "$D_PRIV" ] && throw 250  "not define the context!!!Exit!!!"
+    [  ! -d "$D_PUB" ] && throw 250 "not define the context!!!Exit!!!"
+    echo "handle bash aliases..."
+    fn=bash_aliases
+    f_priv=$D_PRIV/$fn
+    f_pub=$D_PUB/dotfiles/$fn
+    test -f ~/.$fn || touch ~/.$fn
+    key="#import-priv-alias"
+    str="test -f $f_priv && source $f_priv $key"
+    [ $(grep -c "$key" ~/.$fn) -eq 0 ] && echo "$str" >> ~/.$fn
+    key="#import-pub-alias"
+    str="test -f $f_pub && source $f_pub $key"
+    [ $(grep -c "$key" ~/.$fn) -eq 0 ] && echo "$str" >> ~/.$fn
+}
+
+use_tmux()
+{
+    [  ! -d "$D_PRIV" ] && throw 250 "not define the context!!!Exit!!!"
+    [  ! -d "$D_PUB" ] &&  throw 250 "not define the context!!!Exit!!!"
+    fn=bash_profile
+    if [ -L ~/.$fn ] ;then 
+        rm -f ~/.$fn
+        ln -s $D_PUB/dotfiles/tmux/$fn ~/.$fn
+    else
+        echo "File ~/.$fn exist,do nothing for $fn!!!"
+    fi
+
+    fn=tmux.conf
+    [ -f ~/.$fn ] && rm -f ~/.$fn
+    ln -s $D_PUB/dotfiles/tmux/$fn ~/.$fn
+}
+
+use_screen()
+{
+    [  ! -d "$D_PRIV" ] && throw 250 "not define the context!!!Exit!!!"
+    [  ! -d "$D_PUB" ] && throw 250 "not define the context!!!Exit!!!"
+    fn=bash_profile
+    if [ -L ~/.$fn ] ;then 
+        rm -f ~/.$fn
+        ln -s $D_PUB/dotfiles/screen/$fn ~/.$fn
+    else
+        echo "File ~/.$fn exist,do nothing for $fn!!!"
+    fi
+}
+
+handle_profile()
+{
+    [  ! -d "$D_PRIV" ] && throw 250 "not define the context!!!Exit!!!"
+    [  ! -d "$D_PUB" ] && throw 250 "not define the context!!!Exit!!!"
+    echo "handle bash profile..."
+    read -p "screen or tmux? : " sel
+    case "$sel" in
+        "tmux"   ) use_tmux ;;
+        "screen" ) use_screen ;;
+        * )        use_screen;  echo "screen will be used" ;;
+    esac
+}
+
+
+link_apps()
+{
+    local dir=$1
+    # link bin/* 
+    for f in $dir/bin/*; do
+        if [ -f $f ]; then
+            rm -f /usr/local/bin/$(basename $f)
+            ln -s $f /usr/local/bin/$(basename $f)
+            echo "$(basename $f) has been link to /usr/local/bin"
+        fi
+    done
+    #link sbin/*
+    for f in $dir/sbin/*; do
+        if [ -f $f ]; then
+            rm -f /usr/local/sbin/$(basename $f)
+            ln -s $f /usr/local/sbin/$(basename $f)
+            echo "$(basename $f) has been link to /usr/local/sbin"
+        fi
+    done
+}
+
+
+#############################
 insapp()
 {
   which $1 2>&1 > /dev/null && return 0
@@ -51,3 +149,6 @@ dl_and_install()
     cd $D_PWD
     rm -rf $D_TMP
 }
+
+#############################
+

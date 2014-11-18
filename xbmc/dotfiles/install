@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-fn="bash_aliases"
-cur_dir=$(cd `dirname ./$fn`; pwd)
-rm ~/.$fn
-ln -s $cur_dir/$fn ~/.$fn

@@ -1,9 +1,16 @@
 #.bash_profile
 # User specific environment and startup programs
-export PATH=$PATH:/usr/local/packages/atria/current/bin:/usr/atria/bin:$HOME/bin
 export PS1='\u@\h:\W\$ '
 export OVER_SSH=1
 # auto reattach to main screen or create main screen if not created
+#
+
+
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+
 if [ ! "$SCREEN_NAME" ]; then
 	clear
 	echo -e "Welcome to my workspace. You can connect to an existing or create a new session.\n"
