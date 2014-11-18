@@ -46,8 +46,10 @@ use_tmux()
     if [ -L ~/.$fn ] ;then 
         rm -f ~/.$fn
         ln -s $D_PUB/dotfiles/tmux/$fn ~/.$fn
-    else
+    elif [ -f ~/.$fn ]; then
         echo "File ~/.$fn exist,do nothing for $fn!!!"
+    else
+        ln -s $D_PUB/dotfiles/screen/$fn ~/.$fn
     fi
 
     fn=tmux.conf
@@ -63,8 +65,10 @@ use_screen()
     if [ -L ~/.$fn ] ;then 
         rm -f ~/.$fn
         ln -s $D_PUB/dotfiles/screen/$fn ~/.$fn
-    else
+    elif [ -f ~/.$fn ]; then
         echo "File ~/.$fn exist,do nothing for $fn!!!"
+    else
+        ln -s $D_PUB/dotfiles/screen/$fn ~/.$fn
     fi
 }
 
@@ -88,16 +92,16 @@ link_apps()
     # link bin/* 
     for f in $dir/bin/*; do
         if [ -f $f ]; then
-            rm -f /usr/local/bin/$(basename $f)
-            ln -s $f /usr/local/bin/$(basename $f)
+            sudo rm -f /usr/local/bin/$(basename $f)
+            sudo ln -s $f /usr/local/bin/$(basename $f)
             echo "$(basename $f) has been link to /usr/local/bin"
         fi
     done
     #link sbin/*
     for f in $dir/sbin/*; do
         if [ -f $f ]; then
-            rm -f /usr/local/sbin/$(basename $f)
-            ln -s $f /usr/local/sbin/$(basename $f)
+            sudo rm -f /usr/local/sbin/$(basename $f)
+            sudo ln -s $f /usr/local/sbin/$(basename $f)
             echo "$(basename $f) has been link to /usr/local/sbin"
         fi
     done
