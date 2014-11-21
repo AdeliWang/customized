@@ -18,6 +18,7 @@ for var in ${apps[@]};do
     insapp $var
 done
 
+sudo chmod -R a+w /usr/local/etc
 handle_bashrc
 handle_alias
 handle_profile

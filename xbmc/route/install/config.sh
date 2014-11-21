@@ -76,9 +76,10 @@ cp route-service /etc/init.d/
 
 echo "modify rc.local"
 grep "#workround" /etc/rc.local > /dev/null 
-[ $? -ne 0 ] && sed -i "s|^exit 0|\(sleep 30; service route-service restart\) \& #workround\nexit 0|g" /etc/rc.local
+#[ $? -ne 0 ] && sed -i "s|^exit 0|\( \[\[ \"X\$\(runmode\)\" = "Xdos" \]\] && sleep 30; service route-service restart\) \& #workround\nexit 0|g" /etc/rc.local
 
-
+[ $? -ne 0 ] && sed -i "s|^exit 0|\(\[\[ \"X\$\(runmode\)\" = \"Xdos\" \]\] \&\& sleep 10 \&\& service route-service restart\) \& \#workround\
+    nexit 0|g" /etc/rc.local
 
 
 ##EOF

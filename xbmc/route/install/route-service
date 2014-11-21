@@ -14,19 +14,12 @@
 
 startup()
 {
-    # Open wlan0
     rfkill unblock wifi
     ifconfig wlan0 up
-    # Set wlan0 ip address
     ifconfig wlan0 192.168.15.1
-    # Configure NAT
-    # Delete NAT rules
     iptables -t nat -F
-    # Add NAT rule
     iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-    # Enable ip forwoad
     sysctl net.ipv4.ip_forward=1
-    # start services
     service dnsmasq start
     service hostapd start
     rfkill unblock wifi 
@@ -34,13 +27,11 @@ startup()
 
 stop_()
 {
-    # Stop services
     service dnsmasq stop
     service hostapd stop
-    # Delete NAT Setting
     iptables -t nat -F
-    # Disable ip forward
     sysctl net.ipv4.ip_forward=0
+    rfkill block wifi
 }
 
 echo "$(date) run wifi-route $1" >> /tmp/log
