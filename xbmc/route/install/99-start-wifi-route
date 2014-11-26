@@ -1,4 +1,4 @@
-#/bin/sh
+#!/usr/bin/env bash
 #
 # This script should install to /etc/NetworkManager/dispatcher.d/
 # Script to dispatch NetworkManager events

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 ### BEGIN INIT INFO
 # Provides: 	wifi-route	
@@ -14,15 +14,15 @@
 
 startup()
 {
+    nmcli nm wifi off
     rfkill unblock wifi
     ifconfig wlan0 up
     ifconfig wlan0 192.168.15.1
     iptables -t nat -F
     iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
     sysctl net.ipv4.ip_forward=1
-    service dnsmasq start
-    service hostapd start
-    rfkill unblock wifi 
+    service dnsmasq restart
+    service hostapd restart
 }
 
 stop_()
@@ -34,6 +34,7 @@ stop_()
     rfkill block wifi
 }
 
+[ -f /tmp/log ] || sleep 20
 echo "$(date) run wifi-route $1" >> /tmp/log
 case "$1" in
     start  ) 
@@ -43,7 +44,6 @@ case "$1" in
         stop_
         ;;
     restart) 
-         stop_
          startup
         ;;
     *    ) echo "Usage: $0 (start|stop|restart)" ;;
