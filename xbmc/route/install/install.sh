@@ -75,7 +75,9 @@ echo "install route-service"
 cp route-service /etc/init.d/
 
 echo "modify rc.local"
-grep "#workround" /etc/rc.local > /dev/null 
+#grep "#workround" /etc/rc.local > /dev/null 
 #[ $? -ne 0 ] && sed -i "s|^exit 0|\( \[\[ \"X\$\(runmode\)\" = "Xdos" \]\] && sleep 30; service route-service restart\) \& #workround\nexit 0|g" /etc/rc.local
-
+rc_self=$(cd $(dirname $0); pwd)/rc.self
+grep "rc.self" /etc/rc.local > /dev/null
+[ $? -ne 0 ] && sed -i "s|^exit 0|\( \[ -f $rc_self \] \&\& $rc_self \) \& \nexit 0 |g" /etc/rc.local 
 ##EOF
