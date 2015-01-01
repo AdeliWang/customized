@@ -1,15 +1,7 @@
 #.bash_profile
-# User specific environment and startup programs
-export PS1='\u@\h:\W\$ '
+# import tmux env
 
-os=$(uname -s)
-
-export os
-export LANGUAGE=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-if [[ ! $S &&  "$os" != "Darwin" ]]; then
+if [ ! $S -a "$os" != "Darwin" ]; then
     bin=$(which tmux)
     if [ -z $bin ]; then
         echo "please install tmux"

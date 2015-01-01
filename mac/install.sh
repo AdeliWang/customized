@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #set +e
 os=$(uname -s)
-[[ "$os" != "Darwin" ]] && echo -e "just support mac os!!!\nExit !!!!"; exit 1
+[[ "$os" != "Darwin" ]] && echo -e "just support mac os!!!\nExit !!!!" &&  exit 1
 
 export d_root=$(cd "$(dirname $0)/.."; pwd)
 export D_PRIV=$(cd $(dirname $0); pwd)

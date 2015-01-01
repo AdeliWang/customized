@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.livecloud.uci
+Exec=/usr/local/sbin/uci-svr.py
+User=root

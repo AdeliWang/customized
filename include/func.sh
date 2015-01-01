@@ -38,53 +38,36 @@ handle_alias()
     [ $(grep -c "$key" ~/.$fn) -eq 0 ] && echo "$str" >> ~/.$fn
 }
 
-use_tmux()
-{
-    [  ! -d "$D_PRIV" ] && throw 250 "not define the context!!!Exit!!!"
-    [  ! -d "$D_PUB" ] &&  throw 250 "not define the context!!!Exit!!!"
-    fn=bash_profile
-    if [ -L ~/.$fn ] ;then 
-        rm -f ~/.$fn
-        ln -s $D_PUB/dotfiles/tmux/$fn ~/.$fn
-    elif [ -f ~/.$fn ]; then
-        echo "File ~/.$fn exist,do nothing for $fn!!!"
-    else
-        ln -s $D_PUB/dotfiles/screen/$fn ~/.$fn
-    fi
-
-    fn=tmux.conf
-    [ -f ~/.$fn ] && rm -f ~/.$fn
-    ln -s $D_PUB/dotfiles/tmux/$fn ~/.$fn
-}
-
-use_screen()
-{
-    [  ! -d "$D_PRIV" ] && throw 250 "not define the context!!!Exit!!!"
-    [  ! -d "$D_PUB" ] && throw 250 "not define the context!!!Exit!!!"
-    fn=bash_profile
-    if [ -L ~/.$fn ] ;then 
-        rm -f ~/.$fn
-        ln -s $D_PUB/dotfiles/screen/$fn ~/.$fn
-    elif [ -f ~/.$fn ]; then
-        echo "File ~/.$fn exist,do nothing for $fn!!!"
-    else
-        ln -s $D_PUB/dotfiles/screen/$fn ~/.$fn
-    fi
-}
-
 handle_profile()
 {
-    [  ! -d "$D_PRIV" ] && throw 250 "not define the context!!!Exit!!!"
+    [  ! -d "$D_PRIV" ] && throw 250  "not define the context!!!Exit!!!"
     [  ! -d "$D_PUB" ] && throw 250 "not define the context!!!Exit!!!"
     echo "handle bash profile..."
+    fn=bash_profile
+    f_priv="$D_PRIV/$fn"
+    f_pub="$D_PUB/dotfiles/$fn"
+    test -f ~/.$fn || touch ~/.$fn
+    key="#import-priv-profile"
+    str="test -f $f_priv && source $f_priv $key"
+    [ $(grep -c "$key" ~/.$fn) -eq 0 ] && echo "$str" >> ~/.$fn
+    key="#import-pub-profile"
+    str="test -f $f_pub && source $f_pub $key"
+    [ $(grep -c "$key" ~/.$fn) -eq 0 ] && echo "$str" >> ~/.$fn
+
+    #[ $(uname -s) == "Darwin" ] && return 0
+
     read -p "screen or tmux? : " sel
     case "$sel" in
-        "tmux"   ) use_tmux ;;
-        "screen" ) use_screen ;;
-        * )        use_screen;  echo "screen will be used" ;;
+        "tmux"   )  env_=tmux;;
+        "screen" )  env_=screen;;
+        * )         env_="screen";  echo "screen will be used" ;;
     esac
-}
 
+    f_env="$D_PUB/dotfiles/$env_/$fn"
+    key="#import-env-profile"
+    str="test -f $f_env && source $f_env $key"
+    [ $(grep -c "$key" ~/.$fn) -eq 0 ] && echo "$str" >> ~/.$fn
+}
 
 link_apps()
 {
@@ -92,21 +75,20 @@ link_apps()
     # link bin/* 
     for f in $dir/bin/*; do
         if [ -f $f ]; then
-            sudo rm -f /usr/local/bin/$(basename $f)
-            sudo ln -s $f /usr/local/bin/$(basename $f)
+            rm -f /usr/local/bin/$(basename $f)
+            ln -s $f /usr/local/bin/$(basename $f)
             echo "$(basename $f) has been link to /usr/local/bin"
         fi
     done
     #link sbin/*
     for f in $dir/sbin/*; do
         if [ -f $f ]; then
-            sudo rm -f /usr/local/sbin/$(basename $f)
-            sudo ln -s $f /usr/local/sbin/$(basename $f)
+            rm -f /usr/local/sbin/$(basename $f)
+            ln -s $f /usr/local/sbin/$(basename $f)
             echo "$(basename $f) has been link to /usr/local/sbin"
         fi
     done
 }
-
 
 #############################
 insapp()

@@ -71,5 +71,7 @@ source $prj_root/include/func.sh
 #ins_cscope
 ins_amix_vimrc
 
+[ -f /usr/local/bin/code-parser ] || ln -s $(cd $0; pwd)/code-parser /usr/local/bin/
+
 
 ##end of file

@@ -6,11 +6,6 @@ throw()
   echo $2
   exit $err_no
 }
-f_flag="/usr/local/etc/.runmode"
-if [ $# -eq 0 ]; then 
-    cat $f_flag
-    exit 0  
-fi
 
 u_id=$(id -u)
 [ $u_id -ne 0 ] && throw 12 "Permission denied"  
@@ -28,11 +23,5 @@ esac
 
 sed -i "s/GRUB_CMDLINE_LINUX_DEFAULT=.*$/GRUB_CMDLINE_LINUX_DEFAULT=\"quiet $mode\"/g" $f_grub
 update-grub2 >/dev/null 2>/dev/null
-if [ $? -eq 0 ]; then
-    echo "$1" >$f_flag
-    reboot
-else    
-    throw 21 "failed to switch mode"
-fi
-
-
+[ $? -ne 0 ] && throw 21 "failed to switch mode"
+reboot

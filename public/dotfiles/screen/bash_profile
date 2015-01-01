@@ -1,17 +1,9 @@
 #.bash_profile
-# User specific environment and startup programs
-export PS1='\u@\h:\W\$ '
-export OVER_SSH=1
-# auto reattach to main screen or create main screen if not created
+# import screen env
 #
+os=$(uname -s)
 
-
-export LANGUAGE=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-
-if [ ! "$SCREEN_NAME" ]; then
+if [ ! "$SCREEN_NAME" -a "$os" != "Darwin" ]; then
 	clear
 	echo -e "Welcome to my workspace. You can connect to an existing or create a new session.\n"
 	SESSIONS=`screen -ls | tail -n +2 | head -n -2`
@@ -29,5 +21,6 @@ if [ ! "$SCREEN_NAME" ]; then
 	fi
 	export SCREEN_NAME
 	screen -dRR $SCREEN_NAME && exit 0
+else
+    test -f ~/.bashrc && source ~/.bashrc
 fi
-
