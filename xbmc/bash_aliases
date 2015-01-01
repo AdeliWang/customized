@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-alias xstart="startx /etc/X11/Xsession /usr/bin/xbmc-standalone"
+alias xstart="startx /etc/X11/Xsession /usr/bin/kodi-standalone"
 alias ustart="startx /etc/X11/Xsession /usr/bin/startxbmcbuntu"
 
