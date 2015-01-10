@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+echo "$(date) $IFACE down, ADDRFAM=$ADDRFAM"; >> /tmp/log
+
+[ "$IFACE" != "lo" ] || exit 0
+#case "$ADDRFAM" in
+#	inet|inet6|NetworkManager*) ;;
+#	*) exit 0 ;;
+#esac
+
+service route-service stop
+

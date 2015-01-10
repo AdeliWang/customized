@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+[ "$IFACE" != "lo" ] || exit 0
+
+runmode=$(runmode)
+echo "$(date) runmode=$runmode; $IFACE up, ADDRFAM=$ADDRFAM;" >> /tmp/log
+
+case "$runmode" in
+    tv*|win*)
+        case "$ADDRFAM" in
+	        inet|inet6|NetworkManager*) ;;
+	        *) exit 0 ;;
+        esac
+        ;;
+    dos*)
+        case "$ADDRFAM" in
+        	inet|inet6|meta*) ;;
+        	*) exit 0 ;;
+        esac
+        ;;
+    *) 
+        exit 0 ;;
+esac
+service route-service restart
+

@@ -1,4 +1,0 @@
-Configuration file: /etc/hostapd/hostapd.conf
-nl80211: Could not configure driver mode
-nl80211 driver initialization failed.
-hostapd_free_hapd_data: Interface wlan0 wasn't started

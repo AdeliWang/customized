@@ -1,4 +1,4 @@
-#/bin/sh
+#!/usr/bin/env bash
 #
 # This script should install to /etc/NetworkManager/dispatcher.d/
 # Script to dispatch NetworkManager events
@@ -12,11 +12,11 @@ case ${IFACE} in
     eth*)
         case ${ACTION} in
             up)
-                log "blocking wifi"
+                log "route-service restart when eth0 up"
                 service route-service restart
                 ;;
             down)
-                log "unblocking wifi"
+                log "route-service stop when eth0 down"
                 service route-service stop
                 ;;
         esac
