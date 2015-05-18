@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 alias xstart="startx /etc/X11/Xsession /usr/bin/kodi-standalone"
-alias ustart="startx /etc/X11/Xsession /usr/bin/startxbmcbuntu"
+alias ustart="startx /etc/X11/Xsession /usr/bin/ubuntu-bug"
 
 alias connecter="cat /var/lib/misc/dnsmasq.leases"
 

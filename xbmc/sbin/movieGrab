@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+#
+# this script used to download movies from baidu yun. 
+# dependent on baidupcs app: "pcs"
+#
+
+D_HOME="/home/macrosea"
+
+throw()
+{
+    echo "$2"
+    exit $1
+}
+
+# list_movies()
+# {
+#     pcs list /movies/download |egrep "^- .+/movies/download/.+" > "$f_info" 
+# }
+# 
+# d_tmp="/tmp/.$(basename $0)"
+# f_info="$d_tmp/movies_info"
+# mkdir -p $d_tmp
+# 
+
+check_space()
+{
+    local fn="$1"
+    local l=$(df -m|grep /home |awk '{print $4}')
+    local r=$(pcs list /movies/download|grep "$fn"|awk '{print 300+$2/(1024*1024)}')
+    local res=$(expr $l \< $r)
+    if [ $res -eq 1 ]; then
+        mount /dev/sdb1 "$D_HOME/Movies/mnt-hdd"
+        [ $? -eq 0 ] && mv "$D_HOME/Movies/*.*"  "$D_HOME/Movies/mnt-hdd/movies/" 
+        sleep 10
+        umount  "$D_HOME/Movies/mnt-hdd"
+    fi
+
+    l=$(df -m|grep /home |awk '{print $4}')
+    res=$(expr $l \< $r)
+    [ $res -eq 1 ] && exit 21
+}
+
+which pcs &>/dev/null || throw 11 "pcs not install"
+
+pcs who|grep sea_orjan &>/dev/null || throw 12 "sea_orjan not login"
+
+mkdir -p "$D_HOME/Movies"
+
+while true; do
+    movies=$(pcs list /movies/download |egrep "^- .+/movies/download/.+"|egrep -o "/movies/download/.+")
+    if [ "X$movies" != "X" ]; then
+        IFS=$'\n'
+        arr=($movies)
+        f_r=${arr[0]}
+        fn="${f_r##*/}"
+        f_l="/home/macrosea/Movies/$fn"
+        echo "r:$f_r  l:$f_l"
+        check_space "$fn"
+        cmd="pcs download $f_r  $f_l"
+        echo "cmd: $cmd"
+        pcs download "$f_r"  "$f_l"
+        if [ $? -eq 0 ]; then
+            echo "download completed."
+            sleep 30
+            pcs move "$f_r" "/movies/archived/$fn"         
+            [ $? -ne 0 ] && pcs move "$f_r" "/movies/archived/$fn.$(date +%s)"         
+        fi
+        sleep 30
+    fi
+    echo "debug"
+    sleep 1200
+done
+
+echo "done"
+
