@@ -20,7 +20,7 @@ logging()
 
 systat()
 {
-    f_log=/tmp/$(basename $0).log
+    local f_log=/tmp/$(basename $0).log
     echo "$(date)" >> $f_log
     df -h >>  $f_log
     echo "" >>  $f_log
@@ -41,7 +41,7 @@ check_space()
 {
     local fn="$1"
     local l=$(df -m|grep /home |awk '{print $4}')
-    local r=$(pcs list /movies/download|grep "$fn"|awk '{print 300+$2/(1024*1024)}')
+    local r=$(pcs list /download|grep "$fn"|awk '{print 300+$2/(1024*1024)}')
     local res=$(echo "$l < $r"|bc)
     if [ "$res" -eq 1 ]; then
         sudo mount /dev/sdb1 "$D_HOME/Movies/mnt-hdd"
@@ -59,12 +59,16 @@ which pcs &>/dev/null || throw 11 "pcs not install"
 
 pcs who|grep sea_orjan &>/dev/null || throw 12 "sea_orjan not login"
 
+d_r_dl="/download"
+d_r_archived="/archived"
+
 mkdir -p "$D_HOME/Movies"
 
 rm -f /tmp/$(basename $0).log
 logging "Running $(basename $0)..."
 while true; do
-    movies=$(pcs list /movies/download |egrep "^- .+/movies/download/.+"|egrep -o "/movies/download/.+")
+    systat
+    movies=$(pcs list "$d_r_dl" |egrep "^- .+$d_r_dl/.+"|egrep -o "$d_r_dl/.+")
     logging "movies: $movies"
     if [ "X$movies" != "X" ]; then
         IFS=$'\n'
@@ -73,23 +77,22 @@ while true; do
         fn="${f_r##*/}"
         f_l="/home/macrosea/Movies/$fn"
         logging "prepare...\nr:$f_r  l:$f_l"
-        systat
         check_space "$fn"
         
         cmd="pcs download $f_r  $f_l"
         logging "begin...\ncmd: $cmd"
-        pcs upload -f /tmp/$(basename $0).log /movies/
+        pcs upload -f /tmp/$(basename $0).log /
 
         pcs download "$f_r"  "$f_l"
         if [ $? -eq 0 ]; then
             logging "download completed."
             sleep 30
-            pcs move "$f_r" "/movies/archived/$fn"         
-            [ $? -ne 0 ] && pcs move "$f_r" "/movies/archived/$fn.$(date +%s)"         
+            pcs move "$f_r" "$d_r_archived/$fn"         
+            [ $? -ne 0 ] && pcs move "$f_r" "$d_r_archived/$fn.$(date +%s)"         
         fi
         sleep 30
     fi
-    pcs upload -f /tmp/$(basename $0).log /movies/
+    pcs upload -f /tmp/$(basename $0).log /
     sleep 1200
 done
 
