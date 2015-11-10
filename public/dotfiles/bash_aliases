@@ -9,7 +9,7 @@ extract () {
             *.tar.bz2)   tar xjf $1     ;;
             *.tar.gz)    tar xzf $1     ;;
             *.bz2)       bunzip2 $1     ;;
-            *.rar)       unrar e $1     ;;
+            *.rar)       unrar x $1     ;;
             *.gz)        gunzip $1      ;;
             *.tar)       tar xf $1      ;;
             *.tbz2)      tar xjf $1     ;;
@@ -43,5 +43,9 @@ alias mytmux="tmux -2 new-session -AD -s tmux-studio"
 
 #wine programs
 alias si='env LANG=en_US wine "c:\Program Files\Source Insight 3\Insight3.exe"'
+
+#foxit
+alias pdf='wine "c:\Program Files\Foxit Software\Foxit Reader\FoxitReader.exe"'
+
 #aria2c
 alias dl2="aria2c -c -x16 -s20 -j20 -d "
